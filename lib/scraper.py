@@ -13,7 +13,7 @@ import xbmcplugin
 import xbmcgui
 import HTMLParser
 import sys
-import xml.etree.cElementTree as ET
+import xml.etree.ElementTree as ET
 
 h = HTMLParser.HTMLParser()
 qp  = urllib.quote_plus
