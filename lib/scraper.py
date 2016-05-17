@@ -13,6 +13,7 @@ import xbmcplugin
 import xbmcgui
 import HTMLParser
 import sys
+import xml.etree.cElementTree as ET
 
 h = HTMLParser.HTMLParser()
 qp  = urllib.quote_plus
@@ -90,7 +91,7 @@ class myAddon(t1mAddon):
 
     else:  
      for b in a:
-      url     = 'http://hgtv-vh.akamaihd.net/i/,%s.mp4,.csmil/master.m3u8' % b['defaultThumbnailUrl'].rsplit('_',2)[0].split('http://media.hgtv.ca/videothumbnails/',1)[1]
+      url     = b['content'][0]['url'].replace('manifest=f4m','manifest=m3u')
       name    = h.unescape(b['title'])
       thumb   = b['defaultThumbnailUrl']
       fanart  = self.addonFanart
@@ -117,8 +118,10 @@ class myAddon(t1mAddon):
 
 
   def getAddonVideo(self,url):
-   url = uqp(url)
-   suburl = 'http://media.hgtv.ca/videothumbnails/%s.vtt' % url.split('/i/,',1)[1].split('.mp4',1)[0]
+   req = self.getRequest(url)
+   xml     = ET.fromstring(req)
+   url     = xml.findall('.//{http://www.w3.org/2005/SMIL21/Language}video')[0].get('src') + '&g=FOYBEKIQFPWN&hdcore=3.3.0'
+   suburl = 'http://media.hgtv.ca/videothumbnails/%s.vtt' % url.split('/i/',1)[1].split('.mp4',1)[0]
    liz = xbmcgui.ListItem(path = url)
    if suburl != "" : liz.setSubtitles([suburl])
    xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, liz)
